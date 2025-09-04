@@ -4,6 +4,7 @@ import { LogSearcher } from '../utils/log-searcher.js';
 import { BugfixManager } from '../utils/bugfix-manager.js';
 
 export interface BugfixAnalyzeParams {
+    bug_id?: string;
     session_id: string;
     bug_url?: string;
     trace_id?: string;
@@ -15,9 +16,10 @@ export async function bugfixAnalyze(params: BugfixAnalyzeParams) {
     console.error('[MCP] 开始 bugfix 分析');
 
     const { session_id, bug_url, trace_id, description, auto_analyze = true } = params;
+    
+    // Ensure bug_id is always set
+    const bugId = params.bug_id || `bug_${Date.now()}`;
 
-    // 生成或查找现有的 bug ID
-    const bugId = BugfixManager.generateBugId(session_id, bug_url);
     const bugfixManager = new BugfixManager();
 
     let analysisResult = '';
@@ -78,24 +80,24 @@ async function runProjectAnalyzer(bugfixManager: BugfixManager, bugId: string): 
         );
 
         const summary = `
-## 📊 项目结构分析结果
+                    ## 📊 项目结构分析结果
 
-- Repository 类: ${config.projectInfo.totalRepositories} 个
-- Service 类: ${config.projectInfo.totalServices} 个
-- 业务场景: ${config.businessScenarios.length} 个
+                    - Repository 类: ${config.projectInfo.totalRepositories} 个
+                    - Service 类: ${config.projectInfo.totalServices} 个
+                    - 业务场景: ${config.businessScenarios.length} 个
 
-### Repository 映射
-${Object.entries(config.repositoryMapping).map(([repo, table]) =>
-            `- ${repo} → ${table}`
-        ).join('\n')}
+                    ### Repository 映射
+                    ${Object.entries(config.repositoryMapping).map(([repo, table]) =>
+                                `- ${repo} → ${table}`
+                            ).join('\n')}
 
-### 业务场景分析
-${config.businessScenarios.map(scenario =>
-            `- ${scenario.scenario}: ${scenario.relatedServices.length} 个服务, ${scenario.coreTables.length} 个核心表`
-        ).join('\n')}
+                    ### 业务场景分析
+                    ${config.businessScenarios.map(scenario =>
+                                `- ${scenario.scenario}: ${scenario.relatedServices.length} 个服务, ${scenario.coreTables.length} 个核心表`
+                            ).join('\n')}
 
-**配置文件已保存至:** \`${configFile}\`
-`;
+                    **配置文件已保存至:** \`${configFile}\`
+                    `;
 
         return { summary, configFile };
     } catch (error: any) {
@@ -132,27 +134,27 @@ async function runLogSearch(traceId: string, bugfixManager: BugfixManager, bugId
         }
 
         const summary = `
-## 🔍 日志搜索结果
+                    ## 🔍 日志搜索结果
 
-### 搜索统计
-- TraceId: ${traceId}
-- 找到日志行数: ${searchResult.lines_count}
-- 日志文件: ${logFile || '未保存'}
+                    ### 搜索统计
+                    - TraceId: ${traceId}
+                    - 找到日志行数: ${searchResult.lines_count}
+                    - 日志文件: ${logFile || '未保存'}
 
-### 业务信息提取
-- 用户ID: ${businessInfo.user_ids.join(', ') || '未找到'}
-- SQL查询: ${businessInfo.sql_queries.length} 条
-- 异常信息: ${businessInfo.exceptions.length} 条
-- API调用: ${businessInfo.api_calls.length} 条
+                    ### 业务信息提取
+                    - 用户ID: ${businessInfo.user_ids.join(', ') || '未找到'}
+                    - SQL查询: ${businessInfo.sql_queries.length} 条
+                    - 异常信息: ${businessInfo.exceptions.length} 条
+                    - API调用: ${businessInfo.api_calls.length} 条
 
-### 日志内容预览
-\`\`\`
-${searchResult.output.split('\n').slice(0, 10).join('\n')}
-${searchResult.lines_count > 10 ? '...(更多内容请查看日志文件)' : ''}
-\`\`\`
+                    ### 日志内容预览
+                    \`\`\`
+                    ${searchResult.output.split('\n').slice(0, 10).join('\n')}
+                    ${searchResult.lines_count > 10 ? '...(更多内容请查看日志文件)' : ''}
+                    \`\`\`
 
-**日志文件已保存至:** \`${logFile}\`
-`;
+                    **日志文件已保存至:** \`${logFile}\`
+                    `;
 
         return { summary, logFile };
     } catch (error: any) {

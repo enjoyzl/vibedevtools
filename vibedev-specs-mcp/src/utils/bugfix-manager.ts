@@ -1,6 +1,5 @@
-import { mkdir, writeFile, readFile } from 'fs/promises';
+import { mkdir, writeFile } from 'fs/promises';
 import { join } from 'path';
-import { existsSync } from 'fs';
 
 export interface BugfixSession {
   bugId: string;
@@ -47,25 +46,6 @@ export class BugfixManager {
   }
 
   /**
-   * Load bugfix session metadata
-   */
-  async loadBugfixSession(bugId: string): Promise<BugfixSession | null> {
-    const sessionPath = join(this.basePath, bugId, 'session.json');
-    
-    if (!existsSync(sessionPath)) {
-      return null;
-    }
-    
-    try {
-      const content = await readFile(sessionPath, 'utf-8');
-      return JSON.parse(content);
-    } catch (error) {
-      console.error(`Failed to load bugfix session: ${error}`);
-      return null;
-    }
-  }
-
-  /**
    * Save analysis result
    */
   async saveAnalysis(bugId: string, filename: string, content: string): Promise<string> {
@@ -98,53 +78,4 @@ export class BugfixManager {
     return reportPath;
   }
 
-  /**
-   * Get bugfix directory path
-   */
-  getBugfixPath(bugId: string): string {
-    return join(this.basePath, bugId);
-  }
-
-  /**
-   * Extract bug ID from TAPD URL
-   * 支持的URL格式:
-   * - https://www.tapd.cn/tapd_fe/55014084/bug/detail/1155014084001047319
-   * - https://tapd.cn/55014084/bug/detail/1155014084001047319
-   */
-  static extractBugIdFromUrl(bugUrl: string): string | null {
-    if (!bugUrl) return null;
-    
-    // 匹配TAPD bug URL中的bug ID
-    const patterns = [
-      /\/bug\/detail\/(\d+)/,  // 标准格式
-      /\/bugtrace\/bugs\/view\/(\d+)/, // 另一种格式
-      /bug_id[=:](\d+)/i,      // 参数格式
-    ];
-    
-    for (const pattern of patterns) {
-      const match = bugUrl.match(pattern);
-      if (match && match[1]) {
-        return `bug_${match[1]}`;
-      }
-    }
-    
-    return null;
-  }
-
-  /**
-   * Generate bug ID from TAPD URL or fallback to session-based ID
-   */
-  static generateBugId(sessionId: string, bugUrl?: string): string {
-    // 首先尝试从TAPD URL提取bug ID
-    if (bugUrl) {
-      const extractedId = this.extractBugIdFromUrl(bugUrl);
-      if (extractedId) {
-        return extractedId;
-      }
-    }
-    
-    // 如果无法从URL提取，则使用session ID和时间戳生成
-    const timestamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-    return `bug_${timestamp}_${sessionId.slice(-6)}`;
-  }
 }

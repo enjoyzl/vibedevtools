@@ -46,8 +46,19 @@ export class ProjectAnalyzer {
   private traceIdPatterns: string[] = [];
   private userIdFields: string[] = [];
 
-  constructor(projectRoot: string) {
-    this.projectRoot = path.resolve(projectRoot);
+  constructor(projectRoot: string = '.') {
+    if (!projectRoot) {
+      projectRoot = '.';
+    }
+    try {
+      this.projectRoot = path.resolve(projectRoot);
+      if (!this.projectRoot) {
+        this.projectRoot = process.cwd();
+      }
+    } catch (error) {
+      console.error(`Failed to resolve project root path: ${error}`);
+      this.projectRoot = process.cwd();
+    }
   }
 
   async analyzeProject(): Promise<ProjectConfig> {
@@ -326,7 +337,9 @@ export class ProjectAnalyzer {
     
     // Create directory if not exists
     const outputDir = path.dirname(outputPath);
-    await fs.promises.mkdir(outputDir, { recursive: true });
+    if (outputDir && outputDir !== '.') {
+      await fs.promises.mkdir(outputDir, { recursive: true });
+    }
     
     await fs.promises.writeFile(outputPath, JSON.stringify(config, null, 2), 'utf-8');
     

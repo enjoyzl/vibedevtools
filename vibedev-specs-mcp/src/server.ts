@@ -203,6 +203,10 @@ export function createServer() {
           bug_url: { 
             type: 'string', 
             description: 'Optional: TAPD bug URL or other bug tracking system URL' 
+          },          
+          bug_id: { 
+            type: 'string', 
+            description: 'Optional: Bug ID from tracking system (if available)' 
           },
           trace_id: { 
             type: 'string', 
@@ -225,6 +229,10 @@ export function createServer() {
           session_id: { 
             type: 'string', 
             description: 'Session identifier' 
+          },
+          bug_id: { 
+            type: 'string', 
+            description: 'Optional: Bug ID from tracking system' 
           },
           bug_url: { 
             type: 'string', 

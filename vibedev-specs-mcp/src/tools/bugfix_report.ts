@@ -3,7 +3,7 @@ import { BugfixManager } from '../utils/bugfix-manager.js';
 
 export interface BugfixReportParams {
     session_id: string;
-    bug_id?: string;
+    bug_id: string;
     bug_url?: string;
     trace_id?: string;
     user_info?: string;
@@ -22,7 +22,7 @@ export async function bugfixReport(params: BugfixReportParams) {
     console.error('[MCP] 生成 bugfix 报告');
 
     // 生成或使用提供的 bug ID
-    const bugId = params.bug_id || BugfixManager.generateBugId(params.session_id, params.bug_url);
+    const bugId = params.bug_id;
     const bugfixManager = new BugfixManager();
 
     const timestamp = new Date().toISOString();

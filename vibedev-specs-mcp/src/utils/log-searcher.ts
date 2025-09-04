@@ -1,4 +1,5 @@
 import * as fs from 'fs';
+import * as path from 'path';
 import { spawn } from 'child_process';
 
 export interface LogSearchConfig {
@@ -48,13 +49,28 @@ export class LogSearcher {
   private config: LogSearchConfig;
 
   constructor(configPath: string = './bugfix.config.json') {
+    if (!configPath) {
+      configPath = './bugfix.config.json';
+    }
     this.config = this.loadConfig(configPath);
   }
 
   private loadConfig(configPath: string): LogSearchConfig {
     try {
+      // Check if the file exists first
+      if (!fs.existsSync(configPath)) {
+        throw new Error(`配置文件 ${configPath} 不存在`);
+      }
+      
       const configContent = fs.readFileSync(configPath, 'utf-8');
-      return JSON.parse(configContent);
+      const config = JSON.parse(configContent);
+      
+      // Validate required fields
+      if (!config.logServer || !config.database || !config.searchOptions) {
+        throw new Error('配置文件格式不正确，缺少必要字段');
+      }
+      
+      return config;
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`配置文件 ${configPath} 不存在或格式错误: ${error.message}`);
@@ -222,10 +238,11 @@ export class LogSearcher {
     }
     
     // Fallback to current directory
-    await fs.promises.writeFile(filename, logContent, 'utf-8');
-    console.log(`Complete log saved to: ${filename}`);
+    const fallbackPath = path.resolve('.', filename);
+    await fs.promises.writeFile(fallbackPath, logContent, 'utf-8');
+    console.log(`Complete log saved to: ${fallbackPath}`);
     
-    return filename;
+    return fallbackPath;
   }
 
   async searchAndAnalyze(traceId: string, bugfixManager?: any, bugId?: string): Promise<{
