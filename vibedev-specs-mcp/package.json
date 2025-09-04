@@ -1,7 +1,7 @@
 {
   "name": "vibedev-specs-mcp",
   "version": "0.1.4",
-  "description": "MCP server for vibedev specs workflow - AI-powered development workflow from requirements to code",
+  "description": "MCP server for vibedev specs workflow and bugfix analysis - AI-powered development workflow from requirements to code and automated bug analysis",
   "main": "dist/index.js",
   "type": "module",
   "bin": {
@@ -23,7 +23,11 @@
     "development",
     "requirements",
     "design",
-    "tasks"
+    "tasks",
+    "bugfix",
+    "analysis",
+    "debugging",
+    "log-analysis"
   ],
   "author": "yinwm",
   "license": "MIT",

@@ -12,6 +12,9 @@ import { designConfirmed } from './tools/design_confirmed.js';
 import { tasksStart } from './tools/tasks.js';
 import { tasksConfirmed } from './tools/tasks_confirmed.js';
 import { executeStart } from './tools/execute.js';
+import { bugfixStart } from './tools/bugfix_start.js';
+import { bugfixAnalyze } from './tools/bugfix_analyze.js';
+import { bugfixReport } from './tools/bugfix_report.js';
 
 export function createServer() {
   const server = new Server(
@@ -186,6 +189,128 @@ export function createServer() {
         },
         required: ['session_id', 'feature_name']
       }
+    },
+    {
+      name: 'vibedev_bugfix_start',
+      description: 'Start the bugfix analysis workflow and initialize configurations',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          session_id: { 
+            type: 'string', 
+            description: 'Optional: Session identifier for tracking' 
+          },
+          bug_url: { 
+            type: 'string', 
+            description: 'Optional: TAPD bug URL or other bug tracking system URL' 
+          },
+          trace_id: { 
+            type: 'string', 
+            description: 'Optional: Trace ID for log searching' 
+          },
+          description: { 
+            type: 'string', 
+            description: 'Optional: Bug description or initial information' 
+          }
+        },
+        required: []
+      }
+    },
+    {
+      name: 'vibedev_bugfix_analyze',
+      description: 'Analyze bug information, search logs, and extract relevant data automatically',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          session_id: { 
+            type: 'string', 
+            description: 'Session identifier' 
+          },
+          bug_url: { 
+            type: 'string', 
+            description: 'Optional: TAPD bug URL or other bug tracking system URL' 
+          },
+          trace_id: { 
+            type: 'string', 
+            description: 'Optional: Trace ID for log searching' 
+          },
+          description: { 
+            type: 'string', 
+            description: 'Optional: Bug description' 
+          },
+          auto_analyze: { 
+            type: 'boolean', 
+            description: 'Whether to run automated analysis scripts (default: true)' 
+          }
+        },
+        required: ['session_id']
+      }
+    },
+    {
+      name: 'vibedev_bugfix_report',
+      description: 'Generate comprehensive bug analysis report with problem location and fix suggestions',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          session_id: { 
+            type: 'string', 
+            description: 'Session identifier' 
+          },
+          bug_id: { 
+            type: 'string', 
+            description: 'Bug ID from tracking system' 
+          },
+          bug_url: { 
+            type: 'string', 
+            description: 'Optional: TAPD bug URL or other bug tracking system URL' 
+          },
+          trace_id: { 
+            type: 'string', 
+            description: 'Trace ID used for analysis' 
+          },
+          user_info: { 
+            type: 'string', 
+            description: 'User information (custNo, hboneNo, etc.)' 
+          },
+          business_scenario: { 
+            type: 'string', 
+            description: 'Business scenario description' 
+          },
+          interface_params: { 
+            type: 'string', 
+            description: 'Interface parameters and request data' 
+          },
+          log_analysis: { 
+            type: 'string', 
+            description: 'Log analysis results' 
+          },
+          table_data: { 
+            type: 'string', 
+            description: 'Related database table data' 
+          },
+          external_api_response: { 
+            type: 'string', 
+            description: 'External API response information' 
+          },
+          problem_location: { 
+            type: 'string', 
+            description: 'Problem code location (class name and line number)' 
+          },
+          possible_cause: { 
+            type: 'string', 
+            description: 'Possible cause analysis' 
+          },
+          impact_scope: { 
+            type: 'string', 
+            description: 'Impact scope assessment' 
+          },
+          fix_suggestions: { 
+            type: 'string', 
+            description: 'Fix suggestions and next steps' 
+          }
+        },
+        required: ['session_id']
+      }
     }
   ];
 
@@ -238,6 +363,18 @@ export function createServer() {
         
         case 'vibedev_specs_execute_start':
           result = await executeStart(args as any);
+          break;
+        
+        case 'vibedev_bugfix_start':
+          result = await bugfixStart(args as any);
+          break;
+
+        case 'vibedev_bugfix_analyze':
+          result = await bugfixAnalyze(args as any);
+          break;
+
+        case 'vibedev_bugfix_report':
+          result = await bugfixReport(args as any);
           break;
         
         default:

@@ -20,7 +20,11 @@ export const STEP_NAMES = {
   REQUIREMENTS: 'Requirements Gathering',
   DESIGN: 'Design Documentation',
   TASKS: 'Task Planning',
-  EXECUTION: 'Task Execution'
+  EXECUTION: 'Task Execution',
+  // Bugfix workflow steps
+  BUGFIX_START: 'Bugfix Start',
+  BUGFIX_ANALYZE: 'Bugfix Analysis',
+  BUGFIX_REPORT: 'Bugfix Report'
 } as const;
 
 // Workflow step constants
@@ -62,15 +66,44 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
   }
 ];
 
+// Bugfix workflow steps
+export const BUGFIX_WORKFLOW_STEPS: WorkflowStep[] = [
+  {
+    step_number: 1,
+    name: STEP_NAMES.BUGFIX_START,
+    description: 'Initialize bugfix analysis workflow and load configurations',
+    tool: 'vibedev_bugfix_start',
+    deliverable: 'Workflow initialization and configuration check'
+  },
+  {
+    step_number: 2,
+    name: STEP_NAMES.BUGFIX_ANALYZE,
+    description: 'Analyze bug information, search logs, and extract relevant data',
+    tool: 'vibedev_bugfix_analyze',
+    deliverable: 'Log analysis results and database queries'
+  },
+  {
+    step_number: 3,
+    name: STEP_NAMES.BUGFIX_REPORT,
+    description: 'Generate comprehensive bug analysis report with fix suggestions',
+    tool: 'vibedev_bugfix_report',
+    deliverable: 'Structured bug analysis report'
+  }
+];
+
 // Get workflow overview helper function
 export function getWorkflowOverview(currentStepName: string): WorkflowOverview {
-  const currentStep = WORKFLOW_STEPS.find(step => step.name === currentStepName);
+  // Check if it's a bugfix workflow step
+  const isBugfixStep = [STEP_NAMES.BUGFIX_START, STEP_NAMES.BUGFIX_ANALYZE, STEP_NAMES.BUGFIX_REPORT].includes(currentStepName as any);
+  
+  const steps = isBugfixStep ? BUGFIX_WORKFLOW_STEPS : WORKFLOW_STEPS;
+  const currentStep = steps.find(step => step.name === currentStepName);
   const stepNumber = currentStep?.step_number || 1;
   
   return {
-    total_steps: WORKFLOW_STEPS.length,
+    total_steps: steps.length,
     current_step: currentStepName,
     current_step_number: stepNumber,
-    steps: WORKFLOW_STEPS
+    steps: steps
   };
 }
