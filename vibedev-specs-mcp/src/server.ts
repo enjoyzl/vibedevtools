@@ -12,6 +12,9 @@ import { designConfirmed } from './tools/design_confirmed.js';
 import { tasksStart } from './tools/tasks.js';
 import { tasksConfirmed } from './tools/tasks_confirmed.js';
 import { executeStart } from './tools/execute.js';
+import { bugfixStart } from './tools/bugfix_start.js';
+import { bugfixAnalyze } from './tools/bugfix_analyze.js';
+import { bugfixReport } from './tools/bugfix_report.js';
 
 export function createServer() {
   const server = new Server(
@@ -186,6 +189,60 @@ export function createServer() {
         },
         required: ['session_id', 'feature_name']
       }
+    },
+    {
+      name: 'vibedev_bugfix_start',
+      description: 'Start the bug analysis workflow and initialize bug fix session',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          bug_url: {
+            type: 'string',
+            description: 'TAPD bug URL (optional)'
+          },
+          trace_id: {
+            type: 'string',
+            description: 'Trace ID for log analysis (optional)'
+          },
+          bug_description: {
+            type: 'string',
+            description: 'Bug description (optional)'
+          }
+        },
+        required: []
+      }
+    },
+    {
+      name: 'vibedev_bugfix_analyze',
+      description: 'Perform comprehensive bug analysis including log search and code analysis',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          session_id: {
+            type: 'string',
+            description: 'Bug analysis session identifier'
+          },
+          trace_id: {
+            type: 'string',
+            description: 'Trace ID extracted from bug info'
+          }
+        },
+        required: ['session_id']
+      }
+    },
+    {
+      name: 'vibedev_bugfix_report',
+      description: 'Generate comprehensive bug analysis report',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          session_id: {
+            type: 'string',
+            description: 'Bug analysis session identifier'
+          }
+        },
+        required: ['session_id']
+      }
     }
   ];
 
@@ -238,6 +295,18 @@ export function createServer() {
         
         case 'vibedev_specs_execute_start':
           result = await executeStart(args as any);
+          break;
+        
+        case 'vibedev_bugfix_start':
+          result = await bugfixStart(args as any);
+          break;
+        
+        case 'vibedev_bugfix_analyze':
+          result = await bugfixAnalyze(args as any);
+          break;
+        
+        case 'vibedev_bugfix_report':
+          result = await bugfixReport(args as any);
           break;
         
         default:

@@ -1,0 +1,25 @@
+{
+  "logServer": {
+    "host": "[LOG_SERVER_HOST]",
+    "username": "[LOG_USERNAME]",
+    "password": "[LOG_PASSWORD]",
+    "baseDirectory": "/path/to/logs/application/",
+    "port": "22",
+    "timeout": "30"
+  },
+  "database": {
+    "host": "[DATABASE_HOST]",
+    "port": "3306",
+    "username": "[DATABASE_USERNAME]",
+    "password": "[DATABASE_PASSWORD]",
+    "database": "[DATABASE_NAME]",
+    "connectionTimeout": "30000"
+  },
+  "searchOptions": {
+    "maxLines": "1000",
+    "contextLines": "10",
+    "caseInsensitive": "true",
+    "includeTimestamp": "true",
+    "tidLength": "32"
+  }
+}

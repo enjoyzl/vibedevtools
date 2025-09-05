@@ -59,13 +59,42 @@ Add to your Claude Code MCP settings:
 8. **vibedev_specs_tasks_confirmed** - Confirm task planning completion
 9. **vibedev_specs_execute_start** - Start task execution
 
+### Bug Analysis Tools
+
+10. **vibedev_bugfix_start** - Start bug analysis workflow
+11. **vibedev_bugfix_analyze** - Perform comprehensive bug analysis
+12. **vibedev_bugfix_report** - Generate bug analysis report
+
 ## Workflow Stages
+
+### Development Workflow
 
 1. **Goal Collection** - Define what you want to build
 2. **Requirements Gathering** - Create detailed EARS-format requirements
 3. **Design Documentation** - Technical architecture and design
 4. **Task Planning** - Break down into executable tasks
 5. **Task Execution** - Implement the code
+
+### Bug Analysis Workflow
+
+1. **Bug Information Collection** - Gather bug details from TAPD or manual input
+2. **Comprehensive Analysis** - Log search, code analysis, and database queries
+3. **Report Generation** - Generate structured bug analysis report
+
+## Configuration
+
+### Bug Analysis Configuration
+
+Bug analysis tools support flexible configuration file paths:
+
+**Configuration File Path Options:**
+- Default: `bugfix.config.json` (project root)
+- Environment Variable: `BUGFIX_CONFIG_PATH=/path/to/config.json`
+- Relative Path: `./config/production.json`
+- Absolute Path: `/etc/bugfix/config.json` or `C:\\configs\\bugfix.json`
+
+**Configuration Example:**
+Refer to `bugfix.config.json` for the complete configuration structure.
 
 ## Project Structure
 
@@ -162,6 +191,60 @@ Assistant: Time to implement! Let's start coding.
 ├── requirements.md    # EARS-format requirements
 ├── design.md         # Technical architecture
 └── tasks.md          # Implementation checklist
+```
+
+## Bug Analysis Tool Usage
+
+### 1. Start Bug Analysis
+```
+User: I encountered a user login failure issue
+Assistant: Let me start the bug analysis workflow for you.
+[calls vibedev_bugfix_start]
+```
+
+### 2. Information Collection
+```
+Assistant: Please provide the following information:
+1. TAPD bug URL or bug description
+2. Trace ID or request ID
+3. Error messages and stack traces
+4. Business scenario and reproduction steps
+
+User:
+- TAPD: https://tapd.example.com/bug/123456
+- Trace ID: tid_abc123def456
+- Error: User login returns 500 error
+- Scenario: User enters correct email and password then clicks login button
+
+Assistant: Information collected. Starting comprehensive analysis.
+[calls vibedev_bugfix_analyze with trace_id]
+```
+
+### 3. Comprehensive Analysis
+```
+Assistant: Performing comprehensive analysis...
+
+1. Using mcp-server-tapd to get detailed bug information
+2. SSH connecting to log server to search for tid_abc123def456
+3. Analyzing SQL execution and exception stacks in logs
+4. Using mcp-mysql-server to query relevant database tables
+5. Correlating analysis to identify root cause
+
+Analysis complete! Found the issue is database connection timeout.
+[calls vibedev_bugfix_report]
+```
+
+### 4. Report Generation
+```
+Assistant: Generating structured bug analysis report...
+
+Report includes:
+- Problem overview and impact scope
+- Root cause analysis and evidence chain
+- Fix recommendations and prevention measures
+- Related code locations and database query results
+
+Report generation complete!
 ```
 
 ## Development
