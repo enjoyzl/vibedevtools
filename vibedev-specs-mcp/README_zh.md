@@ -59,13 +59,42 @@ vibedev-specs-mcp
 8. **vibedev_specs_tasks_confirmed** - 确认任务规划完成
 9. **vibedev_specs_execute_start** - 开始任务执行
 
+### Bug分析工具
+
+10. **vibedev_bugfix_start** - 启动Bug分析工作流
+11. **vibedev_bugfix_analyze** - 执行综合Bug分析
+12. **vibedev_bugfix_report** - 生成Bug分析报告
+
+## 配置说明
+
+### Bug分析配置
+
+Bug分析工具支持灵活的配置文件路径设置：
+
+**配置文件路径选项：**
+- 默认: `bugfix.config.json` (项目根目录)
+- 环境变量: `BUGFIX_CONFIG_PATH=/path/to/config.json`
+- 相对路径: `./config/production.json`
+- 绝对路径: `/etc/bugfix/config.json` 或 `C:\\configs\\bugfix.json`
+
+**配置示例：**
+参考 `bugfix.config.json` 文件查看完整的配置结构。
+
 ## 工作流阶段
+
+### 开发工作流
 
 1. **目标收集** - 定义你想要构建的功能
 2. **需求收集** - 创建详细的 EARS 格式需求
 3. **设计文档** - 技术架构和设计
 4. **任务规划** - 分解为可执行的任务
 5. **任务执行** - 实现代码
+
+### Bug分析工作流
+
+1. **Bug信息收集** - 从 TAPD 或手动输入收集 Bug 详情
+2. **综合分析** - 日志搜索、代码分析和数据库查询
+3. **报告生成** - 生成结构化的 Bug 分析报告
 
 ## 使用示例
 
@@ -151,6 +180,60 @@ vibedev-specs-mcp
 ├── requirements.md    # EARS 格式需求
 ├── design.md         # 技术架构
 └── tasks.md          # 实现清单
+```
+
+## Bug分析工具使用示例
+
+### 1. 启动Bug分析
+```
+用户：我遇到了一个用户登录失败的问题
+助手：让我为您启动Bug分析流程。
+[调用 vibedev_bugfix_start]
+```
+
+### 2. 信息收集
+```
+助手：请提供以下信息：
+1. TAPD Bug链接或Bug描述
+2. Trace ID或请求ID
+3. 错误信息和堆栈跟踪
+4. 业务场景和复现步骤
+
+用户：
+- TAPD: https://tapd.example.com/bug/123456
+- Trace ID: tid_abc123def456
+- 错误：用户登录时返回500错误
+- 场景：用户输入正确的邮箱和密码后点击登录按钮
+
+助手：信息收集完成，现在开始综合分析。
+[调用 vibedev_bugfix_analyze 带上 trace_id]
+```
+
+### 3. 综合分析
+```
+助手：正在执行综合分析...
+
+1. 使用 mcp-server-tapd 获取详细Bug信息
+2. 通过 SSH 连接日志服务器搜索 tid_abc123def456
+3. 分析日志中的SQL执行和异常堆栈
+4. 使用 mcp-mysql-server 查询相关数据库表
+5. 综合分析定位问题原因
+
+分析完成！发现问题原因是数据库连接超时。
+[调用 vibedev_bugfix_report]
+```
+
+### 4. 报告生成
+```
+助手：正在生成结构化的Bug分析报告...
+
+报告包含：
+- 问题概述和影响范围
+- 根因分析和证据链
+- 修复建议和预防措施
+- 相关代码位置和数据库查询结果
+
+报告已生成完成！
 ```
 
 ## 开发

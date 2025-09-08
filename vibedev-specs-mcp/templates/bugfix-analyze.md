@@ -1,75 +1,101 @@
-# 🔍 Bug分析进行中
+### 🔍 Comprehensive Bug Analysis
 
-**Bug ID**: {{bug_id}}  
-**会话ID**: {{session_id}}
+Perform systematic bug analysis using integrated MCP tools to identify root causes and collect evidence.
 
-> Bug ID 从TAPD链接自动提取: {{bug_url}}
+**Analysis Workflow:**
 
-## 📋 分析信息
-- **Bug链接**: {{bug_url}}
-- **TraceId**: {{trace_id}}
-- **问题描述**: {{description}}
+1. **TAPD Bug Information Extraction** (if bug URL provided)
+   - Use `mcp-server-tapd` tools to get complete bug details
+   - Extract trace IDs, error messages, and business context
+   - Parse bug comments for additional technical information
 
-## 🤖 自动分析结果
+2. **Log Search and Analysis** 
+   - **Configuration**: Load connection details from {bugfix_config_file}
+     - Read `logServer.host`, `logServer.username`, `logServer.password`
+     - Read `logServer.baseDirectory` for log file location
+     - Read `logServer.port` (default: 22)
+   - **SSH Connection**: 
+     - **Preferred**: Use SSH MCP server for log access
+     - **Alternative**: Use terminal SSH connection to log server
+   - **Search Strategy**: 
+     ```bash
+     # Method 1 (Preferred): Use SSH MCP Server
+     # Call mcp_ssh-mpc-server_execute-command with grep command
+     # First dynamically locate and load the configuration file
+     # Search for *.config.json files in workspace or use default location
+     
+     # Method 2 (Alternative): Direct SSH connection
+     # Example SSH command (replace with actual values from config):
+     ssh -p [port] [username]@[hostname]
+     
+     # Example search command (replace [baseDirectory] with actual path from config):
+     grep -r -A 10 -B 5 "{trace_id}" [baseDirectory]*.log
+     ```
+   - **Log Analysis Focus**:
+     - Interface business input parameters
+     - SQL execution records and parameters  
+     - External API calls and responses
+     - Exception stack traces and error locations
 
-{{analysis_result}}
+3. **Code Analysis and Database Queries**
+   - **Code Location**: Use log stack traces to identify source code locations
+   - **Table Identification**: Extract database table names from:
+     - Exception stack traces
+     - Repository class references
+     - SQL execution logs
+   - **Database Analysis**: Use `mcp-mysql-server` to query relevant table data
+   - **Configuration**: Reference dynamic configuration file
+     - Locate configuration file in workspace or use environment variable
+     - Read `database.host`, `database.port`, `database.username`, `database.password`
+     - Read `database.database` for target database name
+     - Read `database.connectionTimeout` for connection settings
 
-## 📁 固定文件结构
+4. **Integrated Analysis**
+   - Correlate log data with code structure
+   - Analyze business data consistency
+   - Identify potential root causes
+   - Document evidence chain
 
-分析过程中的所有文件都保存在固定的目录结构中：
+**Constraints:**
 
-- **会话信息**: `.vibedev/bugfix/{{bug_id}}/session.json`
-- **项目分析**: `.vibedev/bugfix/{{bug_id}}/analysis/project_config_*.json`
-- **分析报告**: `.vibedev/bugfix/{{bug_id}}/analysis/analysis_*.md`
-- **日志文件**: `.vibedev/bugfix/{{bug_id}}/logs/logs_*.txt`
-- **最终报告**: `.vibedev/bugfix/{{bug_id}}/reports/bugfix_report_*.md`
+- The model MUST use MCP service integrations instead of direct API calls
+- The model MUST prioritize SSH MCP server (mcp_ssh-mpc-server) over direct SSH connections
+- The model MUST follow the configuration file located dynamically in workspace
+- The model MUST perform log search using the provided trace ID
+- The model MUST attempt to identify and query relevant database tables
+- The model MUST document all findings systematically
+- The model MUST NOT proceed to report generation until analysis is complete
+- The model MUST use provided SSH credentials for log server access (read-only)
+- The model MUST perform database queries safely with appropriate filtering
 
-## 📝 分析约束
+**Expected Outputs:**
+- Complete log trace for the given trace ID
+- Identified source code locations with issues
+- Relevant database table data
+- External service call analysis
+- Initial root cause hypothesis
 
-**模型必须遵循以下约束:**
+**Configuration Reading Guide:**
+1. **Dynamic Config Location**: {bugfix_config_file}
+2. **Extract logServer.baseDirectory** for log search path
+3. **Extract database connection info** for data queries
+4. **Use actual values** instead of placeholders in commands
 
-- 模型必须将项目分析结果保存到 `.vibedev/bugfix/{{bug_id}}/analysis/project_config_*.json`
-- 模型必须将分析报告保存到 `.vibedev/bugfix/{{bug_id}}/analysis/analysis_*.md`
-- 如果提供了TraceId，模型必须将日志文件保存到 `.vibedev/bugfix/{{bug_id}}/logs/logs_*.txt`
-- 模型必须在分析完成后询问用户是否需要生成最终报告
-- 模型不应该自动进入报告生成阶段，除非用户明确确认
+**Example Configuration Usage:**
+```bash
+# Method 1 (Preferred): SSH MCP Server
+# Use mcp_ssh-mpc-server_execute-command tool with grep command
+# No direct SSH connection needed
 
-## 📝 分析指导
+# Method 2 (Alternative): Direct SSH
+# If config shows: "baseDirectory": "/path/to/logs/application/"
+# Then use: grep -r -A 10 -B 5 "{trace_id}" /path/to/logs/application/*.log
 
-基于提供的信息，建议按照以下步骤进行深入分析：
+# If config shows: "host": "your-log-server.com"
+# Then use: ssh -p 22 username@your-log-server.com
+```
 
-### 1. 🎯 信息提取
-从bug描述和TAPD链接中提取：
-- TraceId或其他追踪标识
-- 用户信息（custNo、hboneNo等）
-- 业务场景和操作步骤
-- 错误信息和异常堆栈
-
-### 2. 🔍 日志分析
-使用TraceId搜索相关日志：
-- 接口调用链路
-- SQL执行记录
-- 外部接口调用
-- 异常堆栈信息
-- **保存位置**: `.vibedev/bugfix/{{bug_id}}/logs/logs_*.txt`
-
-### 3. 🗃️ 数据查询
-根据日志分析结果查询相关表：
-- 用户相关数据
-- 业务数据状态
-- 交易记录
-- 配置信息
-
-### 4. 🎯 问题定位
-结合代码分析：
-- 定位问题代码位置
-- 分析可能原因
-- 评估影响范围
-
-## 🚀 下一步操作
-
-1. **如果自动分析完成**: 模型必须询问 "分析结果看起来如何？如果满意，我们可以生成最终的bug分析报告。"
-2. **如果需要更多信息**: 请提供额外的bug详情
-3. **如果需要手动执行某些步骤**: 我会提供具体的命令和指导
-
-**重要**: 模型必须等待用户明确确认后才能使用 `vibedev_bugfix_report` 生成最终报告。
+**Session Context:**
+- Session ID: `{session_id}`
+- Trace ID: `{trace_id}`
+- Current Stage: Comprehensive Analysis (2/3)

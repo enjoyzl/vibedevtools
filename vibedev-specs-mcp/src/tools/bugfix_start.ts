@@ -1,42 +1,52 @@
+import { customAlphabet } from 'nanoid';
 import { readTemplate } from '../utils/template.js';
-import { getWorkflowOverview } from '../utils/workflow.js';
-import { BugfixManager, BugfixSession } from '../utils/bugfix-manager.js';
+
+const generateSessionId = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 12);
 
 export interface BugfixStartParams {
-  bug_id?: string;
-  session_id?: string;
   bug_url?: string;
   trace_id?: string;
-  description?: string;
+  bug_description?: string;
 }
 
 export async function bugfixStart(params: BugfixStartParams = {}): Promise<string> {
-  console.error('[MCP] 开始 bugfix 工作流程');
+  const session_id = generateSessionId();
+  console.error(`[MCP] Starting bugfix workflow with session_id: ${session_id}`);
   
-  const sessionId = params.session_id || `session_${Date.now()}`;
+  const { bug_url, trace_id, bug_description } = params;
   
-  // 创建 bugfix 目录结构
-  const bugfixManager = new BugfixManager();
-  
-  // Save session metadata
-  const session: BugfixSession = {
-    bugId: params.bug_id ?? `bug_${Date.now()}`,
-    sessionId,
-    traceId: params.trace_id,
-    bugUrl: params.bug_url,
-    description: params.description,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  };
-  
-  await bugfixManager.saveBugfixSession(session);
-  
-  const workflowOverview = getWorkflowOverview('bugfix_start');
-  
+  // Use bugfix-start.md template
   const template = await readTemplate('bugfix-start.md', {
-    workflow_overview: JSON.stringify(workflowOverview, null, 2),
-    session_id: sessionId
+    session_id,
+    bug_url: bug_url || '',
+    trace_id: trace_id || '',
+    bug_description: bug_description || ''
   });
   
-  return template;
+  return `# 🐛 VibeSpecs Bug Analysis Workflow Started
+
+## Current Stage: Bug Analysis Initialization (1/3)
+
+Welcome to the VibeSpecs bug analysis workflow! I'll help you perform comprehensive bug analysis from information gathering to root cause identification.
+
+### Workflow Overview:
+- [ ] 1. **Bug Analysis Initialization** ← Current Stage
+- [ ] 2. Comprehensive Analysis (Log Search & Code Analysis)
+- [ ] 3. Report Generation
+
+---
+
+${template}
+
+---
+
+**Session Information**:
+- Session ID: \`${session_id}\`
+${bug_url ? `- Bug URL: ${bug_url}` : ''}
+${trace_id ? `- Trace ID: ${trace_id}` : ''}
+
+**Important**:
+- Please provide bug information or let me extract it from TAPD
+- **Only when you have the necessary information can you call** \`vibedev_bugfix_analyze\` tool
+- **Never** skip the analysis phase before generating the report`;
 }

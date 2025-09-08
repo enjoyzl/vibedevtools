@@ -1,79 +1,80 @@
-# 🐛 Bug分析报告
+### 📊 Bug Analysis Report Generation
 
-**Bug ID**: {{bug_id}}  
-**会话ID**: {{session_id}}  
-**生成时间**: {{timestamp}}
+Generate a comprehensive structured bug analysis report based on all collected evidence and analysis results.
 
-> Bug ID 从TAPD链接自动提取，确保与实际bug记录一致。
+**Report Structure:**
 
-## 📋 Bug基本信息
-- **Bug ID**: {{bug_id}} (从TAPD获取)
-- **TraceId**: {{trace_id}}
-- **用户信息**: {{user_info}} (custNo等)
-- **业务场景**: {{business_scenario}} (具体操作场景)
+The model MUST generate a complete bug analysis report following this exact format:
 
-## 🔍 接口入参
-{{interface_params}}
-*从Bug描述和日志中提取的完整请求参数*
+```markdown
+# Bug Analysis Report
 
-## 📊 相关日志分析
-{{log_analysis}}
-*TraceId关联的完整日志链路和关键业务数据*
+## 📋 Basic Bug Information
+- **Bug ID**: [Bug ID retrieved from TAPD]
+- **TraceId**: [Extracted trace ID]
+- **User Information**: [Customer ID and other user identifiers]
+- **Business Scenario**: [Specific business operation scenario description]
+- **Occurrence Time**: [Time when the bug occurred]
 
-## 🗃️ 相关表数据
-{{table_data}}
-*基于业务分析查询的数据库表数据*
+## 🔍 Interface Input Parameters
+[Complete request parameters extracted from bug description and logs, including all business parameters]
 
-## 🌐 外部接口返回信息
-{{external_api_response}}
-*第三方服务调用的响应信息*
+## 📊 Related Log Analysis
+### Request Chain Tracing
+[Complete log chain based on TraceId, displayed in chronological order]
 
-## ⚠️ 问题定位
-- **问题代码位置**: {{problem_location}} (具体类名和行号)
-- **可能原因**: {{possible_cause}} (根据日志和数据分析的原因)
-- **影响范围**: {{impact_scope}} (问题影响分析)
+### Key Business Data
+[Important business information and parameters from logs]
 
-## 💡 修复建议
-{{fix_suggestions}}
-*具体的修复方案和后续步骤*
+### Exception Information
+[Complete exception stack trace and error information]
 
----
+## 🗃️ Related Table Data
+[Database table data queried based on business analysis, including:]
+- Current state of related business tables
+- Historical data comparison (if applicable)
+- Data consistency check results
 
-## 📁 相关文件
+## 🌐 External Interface Response Information
+[Request and response information from third-party service calls]
 
-所有分析过程中生成的文件都保存在固定的目录结构中：
+## ⚠️ Problem Location
+- **Problem Code Location**: [Specific class name, method name and line number]
+- **Root Cause**: [Root cause derived from analysis of all evidence]
+- **Trigger Conditions**: [Specific conditions that caused the problem]
+- **Impact Scope**: [Users and business scope that may be affected by the problem]
 
-- **会话信息**: `.vibedev/bugfix/{{bug_id}}/session.json`
-- **项目分析**: `.vibedev/bugfix/{{bug_id}}/analysis/project_config_*.json`
-- **分析报告**: `.vibedev/bugfix/{{bug_id}}/analysis/analysis_*.md`
-- **日志文件**: `.vibedev/bugfix/{{bug_id}}/logs/logs_*.txt`
-- **最终报告**: `.vibedev/bugfix/{{bug_id}}/reports/bugfix_report_*.md`
+## 💡 Fix Recommendations
+### Immediate Fix Solution
+[Remedial measures that need to be taken immediately]
 
-```
-.vibedev/bugfix/{{bug_id}}/
-├── session.json          # 会话元数据
-├── analysis/             # 分析结果和配置文件
-├── logs/                 # 日志文件
-└── reports/              # 分析报告
+### Long-term Prevention Measures
+[Improvement suggestions to prevent similar problems from recurring]
+
+### Test Verification Plan
+[Test plan for how to verify the fix effectiveness]
 ```
 
-## 📝 分析说明
+**Quality Requirements:**
 
-本报告基于以下数据源生成：
-1. TAPD Bug信息
-2. 系统日志分析
-3. 数据库查询结果
-4. 代码静态分析
+- The model MUST include all available evidence from the analysis phase
+- The model MUST provide specific, actionable fix recommendations
+- The model MUST use professional technical terminology in English
+- The model MUST ensure the report is comprehensive and well-structured
+- The model MUST reference specific code locations and data evidence
+- The model MUST provide both immediate fixes and long-term improvements
+- The model MUST create a '.vibedev/bugfix/{bug_id}/report.md' file and save the complete report
+- The model MUST ensure the directory structure exists before creating the file
 
-## 🔄 后续步骤
+**Constraints:**
 
-1. **验证分析结果**: 请开发团队验证问题定位的准确性
-2. **实施修复方案**: 按照修复建议进行代码修改
-3. **测试验证**: 在测试环境验证修复效果
-4. **生产部署**: 确认无误后部署到生产环境
+- The model MUST base the report on actual collected data, not assumptions
+- The model MUST clearly indicate if any information is missing or uncertain
+- The model MUST provide specific steps for implementing fixes
+- The model MUST include preventive measures to avoid recurrence
+- The model MUST format the report for easy sharing with development teams
 
-## ⚠️ 注意事项
-
-- 本分析基于当前可获取的信息，可能需要进一步的人工验证
-- 修复建议仅供参考，请结合实际业务逻辑进行调整
-- 如有疑问，请联系相关开发人员进行确认
+**Session Context:**
+- Session ID: `{session_id}`
+- Current Stage: Report Generation (3/3)
+- Status: Final Phase

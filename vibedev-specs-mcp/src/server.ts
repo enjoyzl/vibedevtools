@@ -192,29 +192,21 @@ export function createServer() {
     },
     {
       name: 'vibedev_bugfix_start',
-      description: 'Start the bugfix analysis workflow and initialize configurations',
+      description: 'Start the bug analysis workflow and initialize bug fix session',
       inputSchema: {
         type: 'object',
         properties: {
-          session_id: { 
-            type: 'string', 
-            description: 'Optional: Session identifier for tracking' 
+          bug_url: {
+            type: 'string',
+            description: 'TAPD bug URL (optional)'
           },
-          bug_url: { 
-            type: 'string', 
-            description: 'Optional: TAPD bug URL or other bug tracking system URL' 
-          },          
-          bug_id: { 
-            type: 'string', 
-            description: 'Optional: Bug ID from tracking system (if available)' 
+          trace_id: {
+            type: 'string',
+            description: 'Trace ID for log analysis (optional)'
           },
-          trace_id: { 
-            type: 'string', 
-            description: 'Optional: Trace ID for log searching' 
-          },
-          description: { 
-            type: 'string', 
-            description: 'Optional: Bug description or initial information' 
+          bug_description: {
+            type: 'string',
+            description: 'Bug description (optional)'
           }
         },
         required: []
@@ -222,33 +214,17 @@ export function createServer() {
     },
     {
       name: 'vibedev_bugfix_analyze',
-      description: 'Analyze bug information, search logs, and extract relevant data automatically',
+      description: 'Perform comprehensive bug analysis including log search and code analysis',
       inputSchema: {
         type: 'object',
         properties: {
-          session_id: { 
-            type: 'string', 
-            description: 'Session identifier' 
+          session_id: {
+            type: 'string',
+            description: 'Bug analysis session identifier'
           },
-          bug_id: { 
-            type: 'string', 
-            description: 'Optional: Bug ID from tracking system' 
-          },
-          bug_url: { 
-            type: 'string', 
-            description: 'Optional: TAPD bug URL or other bug tracking system URL' 
-          },
-          trace_id: { 
-            type: 'string', 
-            description: 'Optional: Trace ID for log searching' 
-          },
-          description: { 
-            type: 'string', 
-            description: 'Optional: Bug description' 
-          },
-          auto_analyze: { 
-            type: 'boolean', 
-            description: 'Whether to run automated analysis scripts (default: true)' 
+          trace_id: {
+            type: 'string',
+            description: 'Trace ID extracted from bug info'
           }
         },
         required: ['session_id']
@@ -256,65 +232,13 @@ export function createServer() {
     },
     {
       name: 'vibedev_bugfix_report',
-      description: 'Generate comprehensive bug analysis report with problem location and fix suggestions',
+      description: 'Generate comprehensive bug analysis report',
       inputSchema: {
         type: 'object',
         properties: {
-          session_id: { 
-            type: 'string', 
-            description: 'Session identifier' 
-          },
-          bug_id: { 
-            type: 'string', 
-            description: 'Bug ID from tracking system' 
-          },
-          bug_url: { 
-            type: 'string', 
-            description: 'Optional: TAPD bug URL or other bug tracking system URL' 
-          },
-          trace_id: { 
-            type: 'string', 
-            description: 'Trace ID used for analysis' 
-          },
-          user_info: { 
-            type: 'string', 
-            description: 'User information (custNo, hboneNo, etc.)' 
-          },
-          business_scenario: { 
-            type: 'string', 
-            description: 'Business scenario description' 
-          },
-          interface_params: { 
-            type: 'string', 
-            description: 'Interface parameters and request data' 
-          },
-          log_analysis: { 
-            type: 'string', 
-            description: 'Log analysis results' 
-          },
-          table_data: { 
-            type: 'string', 
-            description: 'Related database table data' 
-          },
-          external_api_response: { 
-            type: 'string', 
-            description: 'External API response information' 
-          },
-          problem_location: { 
-            type: 'string', 
-            description: 'Problem code location (class name and line number)' 
-          },
-          possible_cause: { 
-            type: 'string', 
-            description: 'Possible cause analysis' 
-          },
-          impact_scope: { 
-            type: 'string', 
-            description: 'Impact scope assessment' 
-          },
-          fix_suggestions: { 
-            type: 'string', 
-            description: 'Fix suggestions and next steps' 
+          session_id: {
+            type: 'string',
+            description: 'Bug analysis session identifier'
           }
         },
         required: ['session_id']
@@ -376,11 +300,11 @@ export function createServer() {
         case 'vibedev_bugfix_start':
           result = await bugfixStart(args as any);
           break;
-
+        
         case 'vibedev_bugfix_analyze':
           result = await bugfixAnalyze(args as any);
           break;
-
+        
         case 'vibedev_bugfix_report':
           result = await bugfixReport(args as any);
           break;
